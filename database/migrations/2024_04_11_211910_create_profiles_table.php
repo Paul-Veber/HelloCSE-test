@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string("firstname");
             $table->string("lastname");
-            $table->string("image");
-            $table->string("status");
+            $table->string("image")->default("default.jpg");
+            $table->enum('status', ['active', 'waiting', 'inactive'])->default('waiting');
             $table->timestamps();
         });
     }
