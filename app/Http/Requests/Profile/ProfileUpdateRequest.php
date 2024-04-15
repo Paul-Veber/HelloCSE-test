@@ -15,12 +15,13 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstname' => ['string', 'max:255'],
-            'lastname' => ['string', 'max:255'],
+            'id' => ['required', 'integer'],
+            'first_name' => ['string', 'max:255'],
+            'last_name' => ['string', 'max:255'],
             //'image' => ['string', 'max:255'],
             'status' => [
-                'string', Rule::in(['active', 'waiting', 'inactive'])
-            ]
+                'string', Rule::in(['active', 'waiting', 'inactive', null])
+            ],
         ];
     }
 }

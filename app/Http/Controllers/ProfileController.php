@@ -7,7 +7,6 @@ use App\Http\Requests\Profile\ProfileUpdateRequest;
 use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use App\Repository\ProfileRepository;
-use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
@@ -27,8 +26,6 @@ class ProfileController extends Controller
     {
         $newProfileValue = $request->validated();
 
-        /* $newProfileValue = $request->all(); */
-        /* dd($newProfileValue); */
         $created = ProfileRepository::create($newProfileValue);
 
         if ($created) {
@@ -50,11 +47,11 @@ class ProfileController extends Controller
 
         if ($updated) {
             return redirect()
-                ->route('profile.edit')
+                ->route('dashboard')
                 ->with('success', 'Profile updated successfully');
         } else {
             return redirect()
-                ->route('profile.edit')
+                ->route('api.profile.update')
                 ->with('error', 'Profile update failed');
         }
     }
@@ -65,7 +62,7 @@ class ProfileController extends Controller
 
         if ($deleted) {
             return redirect()
-                ->route('profile.edit')
+                ->route('dashboard')
                 ->with('success', 'Profile deleted successfully');
         } else {
             return redirect()

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Administrator;
+use App\Models\Profile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -10,90 +11,85 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    public function test_create_profile(): void
     {
-        $user = Administrator::factory()->create();
+        // check if guest can't create profile
+        $response = $this->post(route('api.profile.store'), [
+            'first_name' => 'test',
+            'last_name' => 'user',
+            'status' => 'active',
+        ]);
+        $response->assertStatus(302);
 
+        $user = Administrator::factory()->create();
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
-
-        $response->assertOk();
+            ->post(route('api.profile.store'), [
+                'first_name' => 'test',
+                'last_name' => 'user',
+                'status' => 'active',
+            ]);
+        $response->assertRedirect('/dashboard');
     }
 
-    public function test_profile_information_can_be_updated(): void
+    public function test_update_profile(): void
     {
-        $user = Administrator::factory()->create();
 
+        // check if guest can't update profile
+        $response = $this->patch(route('api.profile.update'), [
+            'id' => 1,
+            'first_name' => 'Test Updated',
+        ]);
+        $response->assertStatus(302);
+
+        $user = Administrator::factory()->create();
+        $profile = Profile::factory()->create();
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
+            ->patch(route('api.profile.update'), [
+                'id' => $profile->id,
+                'first_name' => 'Test Updated',
             ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $user->refresh();
-
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        $response->assertRedirect('/dashboard');
+        assert($profile->first_name === 'Test Updated');
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    public function test_delete_profile(): void
     {
-        $user = Administrator::factory()->create();
+        // check if guest can't delete profile
+        $response = $this->delete(route('api.profile.delete', ['profile' => 1]));
+        $response->assertStatus(302);
 
+        $user = Administrator::factory()->create();
+        $profile = Profile::factory()->create();
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->refresh()->email_verified_at);
+            ->delete(route('api.profile.delete', ['profile' => $profile->id]));
+        $response->assertRedirect('/dashboard');
+        assert(Profile::find($profile->id) === null);
     }
 
-    public function test_user_can_delete_their_account(): void
+    public function test_get_all_profiles(): void
     {
+        // we check if guest can see all profiles
+        Profile::factory()->count(5)->create();
+        $response = $this->get(route('api.profile.all'));
+        $response->assertJsonCount(5);
+
+        // we check if guest can't see inactive profiles
+        profile::factory()->inactive()->count(5)->create();
+        $response = $this->get(route('api.profile.all'));
+        $response->assertJsonCount(5);
+
+        // we check if guest can't see waiting profiles
+        profile::factory()->waiting()->count(5)->create();
+        $response = $this->get(route('api.profile.all'));
+        $response->assertJsonCount(5);
+
+        // we check if admin can see all profiles
         $user = Administrator::factory()->create();
-
         $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
-
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = Administrator::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrors('password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
+            ->actingAs($user)->get(route('api.profile.all'));
+        $response->assertJsonCount(15);
     }
 }

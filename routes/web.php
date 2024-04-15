@@ -33,6 +33,9 @@ Route::prefix('profile')->group(function () {
         return Inertia::render('Profile/Create');
     })->middleware('auth')
         ->name('profile.create');
+    Route::get('update/{id}', function (int $id) {
+        return Inertia::render('Profile/Update', ['id' => $id]);
+    })->name('profile.update');
 });
 
 require __DIR__ . '/auth.php';
