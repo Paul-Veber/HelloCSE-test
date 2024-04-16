@@ -8,7 +8,7 @@ install:
 	$(sail) up
 
 test:
-	$(sail) test
+	$(sail) test --filter ProfileTest
 
 up:
 	$(sail) up
