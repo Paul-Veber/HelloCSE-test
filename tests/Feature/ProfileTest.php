@@ -51,9 +51,11 @@ class ProfileTest extends TestCase
             ->patch(route('api.profile.update'), [
                 'id' => $profile->id,
                 'first_name' => 'Test Updated',
+                'image' => UploadedFile::fake()->image("updated.jpg")->size(1024),
             ]);
         $response->assertRedirect(route('dashboard'));
         assert($profile->first_name === 'Test Updated');
+        assert($profile->image === 'profile/updated.jpg');
     }
 
     public function test_delete_profile(): void
