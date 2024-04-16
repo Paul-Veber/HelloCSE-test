@@ -36,7 +36,7 @@ const submit = () => {
                     autocomplete="first_name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.firstname" />
+                <InputError class="mt-2" :message="form.errors.first_name" />
             </div>
 
             <div class="mt-4">
@@ -51,7 +51,7 @@ const submit = () => {
                     autocomplete="last_name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.lastname" />
+                <InputError class="mt-2" :message="form.errors.last_name" />
             </div>
 
             <div class="mt-4">

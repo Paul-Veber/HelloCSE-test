@@ -12,7 +12,15 @@ const props = defineProps<{
 
 console.log(props.id);
 
-const form = useForm({
+interface UpdateForm {
+    id: number;
+    first_name: string | undefined;
+    last_name: string | undefined;
+    image: File | undefined;
+    status: string | undefined;
+}
+
+const form = useForm<UpdateForm>({
     id: props.id,
     first_name: undefined,
     last_name: undefined,
@@ -47,7 +55,7 @@ const selectStatus = (event: Event) => {
                     autocomplete="first_name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.firstname" />
+                <InputError class="mt-2" :message="form.errors.first_name" />
             </div>
 
             <div class="mt-4">
@@ -61,7 +69,7 @@ const selectStatus = (event: Event) => {
                     autocomplete="last_name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.lastname" />
+                <InputError class="mt-2" :message="form.errors.last_name" />
             </div>
 
             <div class="mt-4">
