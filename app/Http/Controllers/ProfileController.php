@@ -7,24 +7,38 @@ use App\Http\Requests\Profile\ProfileUpdateRequest;
 use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use App\Repository\ProfileRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
 
-    public function GetAllProfiles()
+    public function GetAllProfiles(): LengthAwarePaginator
     {
         $auth = auth()->check();
 
         if ($auth) {
-            return ProfileRepository::adminAll();
+            $paginatedValues = ProfileRepository::adminAll();
+            foreach ($paginatedValues as $value) {
+                $value['image'] = Storage::url($value['image']);
+            }
+            return $paginatedValues;
         } else {
-            return ProfileRepository::publicAll();
+            $paginatedValues = ProfileRepository::publicAll();
+            foreach ($paginatedValues as $value) {
+                $value['image'] = Storage::url($value['image']);
+            }
+            return $paginatedValues;
         }
     }
 
     public function store(ProfileCreateRequest $request): RedirectResponse
     {
         $newProfileValue = $request->validated();
+
+        $image = $request->file('image');
+        // I replace the image with the path
+        $newProfileValue['image'] = Storage::putFile('profile', $image);
 
         $created = ProfileRepository::create($newProfileValue);
 
@@ -34,7 +48,7 @@ class ProfileController extends Controller
                 ->with('success', 'Profile created successfully');
         } else {
             return redirect()
-                ->route('profile.create')
+                ->route('api.profile.create')
                 ->with('error', 'Profile creation failed');
         }
     }
@@ -42,6 +56,12 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $profileValue = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            // I replace the image with the path
+            $profileValue['image'] = Storage::putFile('profile', $image);
+        }
 
         $updated = ProfileRepository::update($profileValue, $request->id);
 

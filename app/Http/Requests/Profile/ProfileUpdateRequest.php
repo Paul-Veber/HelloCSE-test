@@ -4,6 +4,7 @@ namespace App\Http\Requests\Profile;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -18,9 +19,16 @@ class ProfileUpdateRequest extends FormRequest
             'id' => ['required', 'integer'],
             'first_name' => ['string', 'max:255'],
             'last_name' => ['string', 'max:255'],
-            //'image' => ['string', 'max:255'],
+            'image' => ['file', File::image()
+                ->min(1024)
+                ->max(10 * 1024)
+                ->dimensions(
+                    Rule::dimensions()
+                        ->maxWidth(1000)
+                        ->maxHeight(1000)
+                )],
             'status' => [
-                'string', Rule::in(['active', 'waiting', 'inactive', null])
+                'string', Rule::in(['active', 'waiting', 'inactive'])
             ],
         ];
     }
