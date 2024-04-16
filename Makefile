@@ -1,11 +1,12 @@
-sail = ./vendor/bin/sail artisan
+sail = ./vendor/bin/sail
+artisan = $(sail) artisan
 
 install:
-	$(sail) migrate
-	$(sail) db:seed
-	$(sail) storage:link
-	$(sail) npm build
-	$(sail) up
+	$(artisan) migrate
+	$(artisan) db:seed
+	$(artisan) storage:link
+	$(sail) npm run build
+	$(artisan) up
 
 test:
 	$(sail) test --filter ProfileTest
