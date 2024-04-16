@@ -9,7 +9,7 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 const form = useForm({
     first_name: "",
     last_name: "",
-    //image: '',
+    image: null,
     status: "",
 });
 
@@ -22,7 +22,7 @@ const submit = () => {
     <GuestLayout>
         <Head title="Create Profile" />
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" enctype="multipart/form-data">
             <div>
                 <InputLabel for="first_name" value="First Name" />
 
@@ -69,6 +69,20 @@ const submit = () => {
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.status" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="image" value="Image" />
+
+                <TextInput
+                    id="last_name"
+                    type="file"
+                    class="mt-1 block w-full"
+                    @input="form.image = $event.target.files[0]"
+                    required
+                />
+
+                <InputError class="mt-2" :message="form.errors.image" />
             </div>
 
             <div class="flex items-center justify-end mt-4">

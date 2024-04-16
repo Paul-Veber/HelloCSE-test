@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Http\UploadedFile;
 use App\Models\Administrator;
 use App\Models\Profile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,8 +29,9 @@ class ProfileTest extends TestCase
                 'first_name' => 'test',
                 'last_name' => 'user',
                 'status' => 'active',
+                'image' => UploadedFile::fake()->image("default.jpg")->size(1024),
             ]);
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect(route('dashboard'));
     }
 
     public function test_update_profile(): void
@@ -50,7 +52,7 @@ class ProfileTest extends TestCase
                 'id' => $profile->id,
                 'first_name' => 'Test Updated',
             ]);
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect(route('dashboard'));
         assert($profile->first_name === 'Test Updated');
     }
 
@@ -65,31 +67,32 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->delete(route('api.profile.delete', ['profile' => $profile->id]));
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect(route('dashboard'));
         assert(Profile::find($profile->id) === null);
     }
 
     public function test_get_all_profiles(): void
     {
-        // we check if guest can see all profiles
+        // we check if guest can see all active profiles
         Profile::factory()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
-        $response->assertJsonCount(5);
+        $response->assertJsonCount(5, 'data');
 
         // we check if guest can't see inactive profiles
         profile::factory()->inactive()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
-        $response->assertJsonCount(5);
+        $response->assertJsonCount(5, 'data');
 
         // we check if guest can't see waiting profiles
         profile::factory()->waiting()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
-        $response->assertJsonCount(5);
+        $response->assertJsonCount(5, 'data');
 
         // we check if admin can see all profiles
         $user = Administrator::factory()->create();
         $response = $this
-            ->actingAs($user)->get(route('api.profile.all'));
-        $response->assertJsonCount(15);
+            ->actingAs($user)
+            ->get(route('api.profile.all'));
+        $response->assertJsonCount(15, 'data');
     }
 }

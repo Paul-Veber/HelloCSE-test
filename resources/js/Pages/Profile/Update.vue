@@ -14,14 +14,19 @@ console.log(props.id);
 
 const form = useForm({
     id: props.id,
-    first_name: "",
-    last_name: "",
-    //image: '',
-    status: "",
+    first_name: undefined,
+    last_name: undefined,
+    image: undefined,
+    status: undefined,
 });
 
 const submit = () => {
     form.patch(route("api.profile.update"));
+};
+
+const selectStatus = (event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    form.status = target.value === "undefined" ? undefined : target.value;
 };
 </script>
 
@@ -65,15 +70,28 @@ const submit = () => {
                 <select
                     id="status"
                     class="mt-1 block w-full"
-                    v-model="form.status"
+                    @change="selectStatus($event)"
                 >
-                    <option selected value="">Select Status</option>
+                    <option selected value="undefined">Select Status</option>
                     <option value="active">Active</option>
                     <option value="waiting">Waiting</option>
                     <option value="inactive">Inactive</option>
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.status" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="image" value="Image" />
+
+                <TextInput
+                    id="last_name"
+                    type="file"
+                    class="mt-1 block w-full"
+                    @input="form.image = $event.target.files[0]"
+                />
+
+                <InputError class="mt-2" :message="form.errors.image" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
