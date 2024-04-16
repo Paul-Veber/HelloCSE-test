@@ -4,9 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Administrator;
 use App\Models\Profile;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +18,7 @@ class DatabaseSeeder extends Seeder
         Administrator::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => Hash::make('password'),
         ]);
 
         Profile::factory()
