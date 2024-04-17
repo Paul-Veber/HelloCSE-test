@@ -2,6 +2,7 @@ sail = ./vendor/bin/sail
 artisan = $(sail) artisan
 
 install:
+	composer install
 	$(sail) up -d
 	$(artisan) migrate
 	$(artisan) db:seed
