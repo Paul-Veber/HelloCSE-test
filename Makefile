@@ -13,3 +13,6 @@ test:
 
 up:
 	$(sail) up
+
+analyse:
+	./vendor/bin/phpstan analyse

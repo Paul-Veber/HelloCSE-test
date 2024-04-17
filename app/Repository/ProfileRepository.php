@@ -3,10 +3,10 @@
 namespace App\Repository;
 
 use App\Models\Profile;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
 
-class profileRepository
+class ProfileRepository
 {
     static public function create(array $data): bool
     {

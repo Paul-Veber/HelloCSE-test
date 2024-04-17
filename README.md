@@ -14,6 +14,8 @@ Pour l'arrêter `make down`
 
 Pour lancer les tests sur les Profiles `make test`
 
+Pour lancer l'analyse du code via Larastan `make analyse`
+
 ### Routes
 
 Utilisateur par défaut : - email : test@example.com - mot de passe : password
@@ -84,13 +86,13 @@ Deux méthodes sont mises en place pour obtenir tous les profils : une pour les
 
 -   Ajout d'un makefile pour simplifier les commandes et l'Installation.
 
+-   Ajout de Larastan pour vérifier la qualité du code et du typage.
+
 ## Améliorations
 
 -   Améliorations des tests pour couvrir plus de cas.
 
 -   Ajout d'un outil pour générer la documentation de l'api avec OpenApi.
-
--   Ajout de PHPStan pour vérifier la qualité du code et le typage.
 
 -   Ajout de token Csrf pour sécuriser les formulaires.
 
