@@ -6,6 +6,8 @@
 
 _Pour installer le projet vous aurez besoin de Docker et de Docker Compose._
 
+Avant toutes choses il faut copier le fichier .env.example en .env (J’ai laissé les accès et autres de la base de données pour plus de simplicité).
+
 Pour installer le projet et le lancer il suffit d'utiliser la commande `make install`
 
 Pour juste le lancer `make up`
