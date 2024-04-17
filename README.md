@@ -52,7 +52,7 @@ Note : Le formulaire à un bug qui empêche l'upload de fichier. C'est un probl�
 
 -   Création de la migration et du modèle pour l'entité Profil. J'ai également ajouté un dossier Repository pour y stocker les requêtes liées aux entités. (Je n'ai juste pas touché au controller par défaut pour gagner du temps je l'aurai sans doute fait dans une vraie application pour plus de clarté et de consistance)
 
-Deux méthodes sont mises en place pour obtenir tous les profils : une pour les invités avec les limites prévues dans les consignes et une pour les administrateurs avec un accès complet. C'est le controller qui vérifiera si l'utilisateur est connecté ou non pour choisir la méthode à appeler.
+-   Deux méthodes sont mises en place pour obtenir tous les profils : une pour les invités avec les limites prévues dans les consignes et une pour les administrateurs avec un accès complet. C'est le controller qui vérifiera si l'utilisateur est connecté ou non pour choisir la méthode à appeler.
 
 -   Changement de nom du controller par défaut ProfileController en AdminProfilController pour distinguer la modification du profil des administrateurs et l'entité Profil que je viens de créer (même chose pour les request, pages, ...).
 
