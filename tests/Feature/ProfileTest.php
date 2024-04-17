@@ -7,6 +7,7 @@ use App\Models\Administrator;
 use App\Models\Profile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -80,10 +81,24 @@ class ProfileTest extends TestCase
 
     public function test_get_all_profiles(): void
     {
-        // check if guest can see all active profiles
+        // check if guest can see all active profiles and don't return status field
         Profile::factory()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
-        $response->assertJsonCount(5, 'data');
+
+        $response
+            ->assertJson(
+                fn (AssertableJson $json) =>
+                $json
+                    ->has('data', 5)
+                    ->has(
+                        'data.0',
+                        fn ($json) =>
+                        $json
+                            ->missing('status')
+                            ->etc()
+                    )
+                    ->etc()
+            );
 
         // check if guest can't see inactive profiles
         profile::factory()->inactive()->count(5)->create();
