@@ -6,6 +6,7 @@ use Illuminate\Http\UploadedFile;
 use App\Models\Administrator;
 use App\Models\Profile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -23,15 +24,18 @@ class ProfileTest extends TestCase
         $response->assertStatus(302);
 
         $user = Administrator::factory()->create();
+        $file = UploadedFile::fake()->image("default.jpg")->size(1024);
         $response = $this
             ->actingAs($user)
             ->post(route('api.profile.store'), [
                 'first_name' => 'test',
                 'last_name' => 'user',
                 'status' => 'active',
-                'image' => UploadedFile::fake()->image("default.jpg")->size(1024),
+                'image' => $file,
             ]);
         $response->assertRedirect(route('dashboard'));
+        Storage::disk('local')->assertExists('profile/' . $file->hashName());
+        $this->assertDatabaseHas('profiles', ['firstname' => 'test', 'lastname' => 'user', 'status' => 'active']);
     }
 
     public function test_update_profile(): void
@@ -46,16 +50,17 @@ class ProfileTest extends TestCase
 
         $user = Administrator::factory()->create();
         $profile = Profile::factory()->create();
+        $file = UploadedFile::fake()->image("default.jpg")->size(1024);
         $response = $this
             ->actingAs($user)
             ->patch(route('api.profile.update'), [
                 'id' => $profile->id,
                 'first_name' => 'Test Updated',
-                'image' => UploadedFile::fake()->image("updated.jpg")->size(1024),
+                'image' => $file,
             ]);
         $response->assertRedirect(route('dashboard'));
-        assert($profile->first_name === 'Test Updated');
-        assert($profile->image === 'profile/updated.jpg');
+        Storage::disk('local')->assertExists('profile/' . $file->hashName());
+        $this->assertDatabaseHas('profiles', ['firstname' => 'Test Updated', 'id' => $profile->id, 'image' => 'profile/' . $file->hashName()]);
     }
 
     public function test_delete_profile(): void
@@ -70,7 +75,7 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->delete(route('api.profile.delete', ['profile' => $profile->id]));
         $response->assertRedirect(route('dashboard'));
-        assert(Profile::find($profile->id) === null);
+        $this->assertDatabaseMissing('profiles', ['id' => $profile->id]);
     }
 
     public function test_get_all_profiles(): void
