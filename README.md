@@ -1,66 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Hello CSE Test Technique
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Documentation
 
-## About Laravel
+### Installation et commandes
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+_Pour installer le projet vous aurez besoin de Docker et de Docker Compose._
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Pour installer le projet et le lancer il suffit d'utiliser la commande `make install`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Pour juste le lancer `make up`
 
-## Learning Laravel
+Pour l'arrêter `make down`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Pour lancer les tests sur les Profiles `make test`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Routes
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Utilisateur par défaut : - email : test@example.com - mot de passe : password
 
-## Laravel Sponsors
+Authentification par défaut de Laravel Breeze (l'authentification par cookie)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   Get /login : Page de connexion
 
-### Premium Partners
+Api :
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+-   GET /api/profile/all : Récupère les profils actifs et sans le statut pour les invités et tous les profils pour les administrateurs (les résultats sont paginés)
 
-## Contributing
+-   POST /api/profile/store : Crée un profil seulement pour les administrateurs
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   PATCH /api/profile/update : Modifie un profil seulement pour les administrateurs
 
-## Code of Conduct
+-   DELETE /api/profile/delete/{id} : Supprime un profil seulement pour les administrateurs
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Formulaires :
 
-## Security Vulnerabilities
+-   GET /profile/create : Formulaire de création de profil
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   GET /profile/update/{id} : Formulaire de modification de profil
 
-## License
+Note : Le formulaire à un bug qui empêche l'upload de fichier. C'est un problème qui vient du front-end. Quand on upload une image le content-type passe de Json à multipart/form-data et l'id du formulaire n'est plus validé cotés back-end. Pour l'instant je n'ai pas trouvé de solution pour ce problème.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Étapes et Réflexions
+
+-   Mise en place du projet Laravel avec docker et sail. Pour plus de simplicité j'utilise l'installateur de base avec une base de données mysql.
+
+-   Installation de Laravel Breeze pour la gestion de l'authentification
+
+-   Modification du nom de la table User en Admnistrators (je ne l'ai pas appelé administrateur comme dans les consignes pour éviter le mélange du français et de l'anglais dans les noms)
+
+-   Création de la migration et du modèle pour l'entité Profil. J'ai également ajouté un dossier Repository pour y stocker les requêtes liées aux entités. (Je n'ai juste pas touché au controller par défaut pour gagner du temps je l'aurai sans doute fait dans une vraie application pour plus de clarté et de consistance)
+
+Deux méthodes sont mises en place pour obtenir tous les profils : une pour les invités avec les limites prévues dans les consignes et une pour les administrateurs avec un accès complet. C'est le controller qui vérifiera si l'utilisateur est connecté ou non pour choisir la méthode à appeler.
+
+-   Changement de nom du controller par défaut ProfileController en AdminProfilController pour distinguer la modification du profil des administrateurs et l'entité Profil que je viens de créer (même chose pour les request, pages, ...).
+
+-   Création d'un ProfileCreateRequest pour valider les données du formulaire de création de profil et amélioration du typage des données dans la migration de l'entité Profil.
+
+-   Pour le moment je ne m'occupe pas de l'upload de l'image de profil, je me concentre sur les fonctionnalités de base.
+
+-   Mise en place des routes pour l'API des profils : leurs noms et leur chemin débutent par "api" pour les distinguer des autres routes de l'application.
+
+-   Déplacement des ProfileRequest dans un dossier spécifique pour un meilleur rangement.
+
+-   Création d'un formulaire pour la création de profil et pour la modification de profils. J'ai utilisé les composants de Laravel Breeze pour la gestion des formulaires.
+
+-   Créations de tests pour vérifier le bon fonctionnement des routes et des méthodes.
+
+-   J'étudie le problème de l'envoi des images pour les profils. Pour faire ceci, je vais stocker les images en locale et de stocker le chemin de l'image dans la base de données.
+
+-   Dans une vraie application il serait mieux d'avoir un serveur dédié pour le stockage de fichier.
+
+-   J’ajoute des règles pour l'upload des images dans les FormRequest pour éviter les abus et sécuriser l'application.
+
+-   Pour sauvegarder les images localement j'utilise la fonction putFile qui permet de streamer le fichier et de le sauvegarder en local de manière plus efficace.
+
+-   Lorsque nous récupérons les profils nous renvoyons également le lien de l'image de profil. Pour cela j'utilise la fonction url de storage sur tous les éléments renvoyé(plus pratique pour l'affichage des fichiers depuis une API).
+
+-   Pour limiter le nombres d'opérations faites en une fois j'ai paginé les profils renvoyés.
+
+-   Écriture d'un test pour vérifier le fonctionnement de l'upload d'image et ajout de cette fonctionnalité au formulaire de création de profil.
+
+-   On supprime les images lors de la suppression d'un profil ou d'une modification de l'image de profil (sauf pour l'image par défaut).
+
+-   Ajout d'un makefile pour simplifier les commandes et l'Installation.
+
+## Améliorations
+
+-   Améliorations des tests pour couvrir plus de cas.
+
+-   Ajout d'un outil pour générer la documentation de l'api avec OpenApi.
+
+-   Ajout de PHPStan pour vérifier la qualité du code et le typage.
+
+-   Ajout de token Csrf pour sécuriser les formulaires.
+
+-   Meilleure interface pour les formulaires.
