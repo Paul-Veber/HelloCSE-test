@@ -75,22 +75,22 @@ class ProfileTest extends TestCase
 
     public function test_get_all_profiles(): void
     {
-        // we check if guest can see all active profiles
+        // check if guest can see all active profiles
         Profile::factory()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
         $response->assertJsonCount(5, 'data');
 
-        // we check if guest can't see inactive profiles
+        // check if guest can't see inactive profiles
         profile::factory()->inactive()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
         $response->assertJsonCount(5, 'data');
 
-        // we check if guest can't see waiting profiles
+        // check if guest can't see waiting profiles
         profile::factory()->waiting()->count(5)->create();
         $response = $this->get(route('api.profile.all'));
         $response->assertJsonCount(5, 'data');
 
-        // we check if admin can see all profiles
+        // check if admin can see all profiles
         $user = Administrator::factory()->create();
         $response = $this
             ->actingAs($user)

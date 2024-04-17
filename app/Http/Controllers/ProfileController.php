@@ -19,12 +19,14 @@ class ProfileController extends Controller
 
         if ($auth) {
             $paginatedValues = ProfileRepository::adminAll();
+            // Replace the images' path with the url to display them
             foreach ($paginatedValues as $value) {
                 $value['image'] = Storage::url($value['image']);
             }
             return $paginatedValues;
         } else {
             $paginatedValues = ProfileRepository::publicAll();
+            // Replace the images' path with the url to display them
             foreach ($paginatedValues as $value) {
                 $value['image'] = Storage::url($value['image']);
             }
@@ -37,7 +39,7 @@ class ProfileController extends Controller
         $newProfileValue = $request->validated();
 
         $image = $request->file('image');
-        // I replace the image with the path
+        // Replace the image with the path and store it
         $newProfileValue['image'] = Storage::putFile('profile', $image);
 
         $created = ProfileRepository::create($newProfileValue);
@@ -57,9 +59,10 @@ class ProfileController extends Controller
     {
         $profileValue = $request->validated();
 
+        // check if the image is updated
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            // I replace the image with the path
+            // Replace the image with the path and store it
             $profileValue['image'] = Storage::putFile('profile', $image);
         }
 
