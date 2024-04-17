@@ -10,6 +10,8 @@ Avant toutes choses il faut copier le fichier .env.example en .env (J’ai laiss
 
 Pour installer le projet et le lancer il suffit d'utiliser la commande `make install`
 
+**Si le make install ne fonctionne pas : la base de données peut mettre du temps à se lancer, il suffit de relancer la commande make install un peu plus tard**
+
 Pour juste le lancer `make up`
 
 Pour l'arrêter `make down`
